@@ -16,6 +16,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
 import { Route as OrderSuccessOrderIdRouteImport } from './routes/order-success.$orderId'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
@@ -52,6 +53,11 @@ const OrderSuccessOrderIdRoute = OrderSuccessOrderIdRouteImport.update({
   path: '/order-success/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/admin/login': typeof AdminLoginRoute
   '/order-success/$orderId': typeof OrderSuccessOrderIdRoute
   '/products/$productId': typeof ProductsProductIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/admin/login': typeof AdminLoginRoute
   '/order-success/$orderId': typeof OrderSuccessOrderIdRoute
   '/products/$productId': typeof ProductsProductIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/admin/login': typeof AdminLoginRoute
   '/order-success/$orderId': typeof OrderSuccessOrderIdRoute
   '/products/$productId': typeof ProductsProductIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/admin/login'
     | '/order-success/$orderId'
     | '/products/$productId'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/admin/login'
     | '/order-success/$orderId'
     | '/products/$productId'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
+    | '/admin/login'
     | '/order-success/$orderId'
     | '/products/$productId'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   OrderSuccessOrderIdRoute: typeof OrderSuccessOrderIdRoute
   ProductsProductIdRoute: typeof ProductsProductIdRoute
 }
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderSuccessOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  AdminLoginRoute: AdminLoginRoute,
   OrderSuccessOrderIdRoute: OrderSuccessOrderIdRoute,
   ProductsProductIdRoute: ProductsProductIdRoute,
 }
