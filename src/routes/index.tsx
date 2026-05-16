@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SocialBar } from "@/components/SocialBar";
+import { CATEGORIES } from "@/lib/constants";
 import type { Product } from "@/lib/types";
 import logo from "@/assets/logo.jpeg";
 

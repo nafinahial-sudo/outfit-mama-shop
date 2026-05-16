@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AdminShell } from "@/components/AdminShell";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, ShoppingBag, DollarSign, Clock } from "lucide-react";
+import { Package, ShoppingBag, DollarSign, Store } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({ component: AdminDashboard });
 
@@ -18,16 +18,26 @@ function Inner() {
   const { data } = useQuery({
     queryKey: ["admin", "stats"],
     queryFn: async () => {
-      const [{ count: products }, { data: orders }] = await Promise.all([
+      const [{ count: products }, { data: orders }, { data: offline }] = await Promise.all([
         supabase.from("products").select("*", { count: "exact", head: true }),
         supabase.from("orders").select("id,total,status,created_at"),
+        supabase.from("offline_sales").select("id,total,sold_at"),
       ]);
       const all = orders ?? [];
-      const totalRevenue = all
+      const onlineRevenue = all
         .filter((o) => o.status === "delivered")
         .reduce((s, o) => s + Number(o.total), 0);
+      const offlineRevenue = (offline ?? []).reduce((s, r) => s + Number(r.total), 0);
       const pending = all.filter((o) => o.status === "pending").length;
-      return { products: products ?? 0, orders: all.length, revenue: totalRevenue, pending };
+      return {
+        products: products ?? 0,
+        orders: all.length,
+        offlineCount: (offline ?? []).length,
+        onlineRevenue,
+        offlineRevenue,
+        totalRevenue: onlineRevenue + offlineRevenue,
+        pending,
+      };
     },
   });
 
@@ -51,9 +61,15 @@ function Inner() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat icon={<Package className="h-4 w-4" />} label="Products" value={data?.products ?? "—"} />
-        <Stat icon={<ShoppingBag className="h-4 w-4" />} label="Total Orders" value={data?.orders ?? "—"} />
-        <Stat icon={<DollarSign className="h-4 w-4" />} label="Revenue (Delivered)" value={`৳${(data?.revenue ?? 0).toLocaleString()}`} />
-        <Stat icon={<Clock className="h-4 w-4" />} label="Pending Orders" value={data?.pending ?? "—"} />
+        <Stat icon={<ShoppingBag className="h-4 w-4" />} label="Online Orders" value={data?.orders ?? "—"} />
+        <Stat icon={<Store className="h-4 w-4" />} label="Offline Sales" value={data?.offlineCount ?? "—"} />
+        <Stat icon={<DollarSign className="h-4 w-4" />} label="Total Revenue" value={`৳${(data?.totalRevenue ?? 0).toLocaleString()}`} />
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Stat label="Online Revenue (Delivered)" value={`৳${(data?.onlineRevenue ?? 0).toLocaleString()}`} />
+        <Stat label="Offline Revenue" value={`৳${(data?.offlineRevenue ?? 0).toLocaleString()}`} />
+        <Stat label="Pending Orders" value={data?.pending ?? "—"} />
       </div>
 
       <div className="mt-10">
@@ -89,12 +105,12 @@ function Inner() {
   );
 }
 
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: number | string }) {
+function Stat({ icon, label, value }: { icon?: React.ReactNode; label: string; value: number | string }) {
   return (
     <div className="rounded-sm border border-border p-5">
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
-        <span className="text-gold">{icon}</span>
+        {icon && <span className="text-gold">{icon}</span>}
       </div>
       <div className="mt-3 font-display text-2xl">{value}</div>
     </div>
