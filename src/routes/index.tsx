@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SocialBar } from "@/components/SocialBar";
+import { CATEGORIES } from "@/lib/constants";
 import type { Product } from "@/lib/types";
 import logo from "@/assets/logo.jpeg";
 
@@ -66,6 +68,38 @@ function Index() {
         </div>
       </section>
 
+      {/* Categories */}
+      <section id="categories" className="mx-auto w-full max-w-6xl px-4 pt-14">
+        <div className="mb-6">
+          <div className="text-[10px] uppercase tracking-[0.3em] text-gold">Shop by</div>
+          <h2 className="mt-2 font-display text-3xl">Categories</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+          {CATEGORIES.map((c) => (
+            <Link
+              key={c.slug}
+              to="/category/$slug"
+              params={{ slug: c.slug }}
+              className="group relative block aspect-square overflow-hidden rounded-sm border border-border/60 bg-muted"
+            >
+              <img
+                src={c.image}
+                alt={c.label}
+                loading="lazy"
+                width={768}
+                height={768}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-3 md:p-4">
+                <div className="text-[9px] uppercase tracking-[0.25em] text-gold">Collection</div>
+                <div className="font-display text-base text-white md:text-xl">{c.label}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Products */}
       <section id="shop" className="mx-auto w-full max-w-6xl px-4 py-14">
         <div className="mb-8 flex items-end justify-between">
@@ -95,6 +129,18 @@ function Index() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Connect */}
+      <section className="border-t border-border/60 bg-muted/30">
+        <div className="mx-auto max-w-6xl px-4 py-12 text-center">
+          <div className="text-[10px] uppercase tracking-[0.3em] text-gold">Stay Connected</div>
+          <h2 className="mt-2 font-display text-3xl">Follow Outfit Mama</h2>
+          <p className="mt-2 text-sm text-muted-foreground">New drops, behind-the-scenes and styling — first.</p>
+          <div className="mt-6 flex justify-center">
+            <SocialBar />
+          </div>
+        </div>
       </section>
 
       <Footer />

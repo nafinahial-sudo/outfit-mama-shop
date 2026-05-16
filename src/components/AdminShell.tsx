@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, Package, ShoppingBag, BarChart3, LogOut, Plus, Menu, X } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, BarChart3, LogOut, Plus, Menu, X, Store, Share2 } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -87,6 +87,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <NavLink to="/admin/products" icon={<Package className="h-4 w-4" />} label="Products" />
             <NavLink to="/admin/products/new" icon={<Plus className="h-4 w-4" />} label="Add Product" />
             <NavLink to="/admin/orders" icon={<ShoppingBag className="h-4 w-4" />} label="Orders" />
+            <NavLink to="/admin/offline-sales" icon={<Store className="h-4 w-4" />} label="Offline Sales" />
+            <NavLink to="/admin/social" icon={<Share2 className="h-4 w-4" />} label="Social Media" />
             <NavLink to="/admin/reports" icon={<BarChart3 className="h-4 w-4" />} label="Reports" />
           </nav>
           <button onClick={logout} className="mt-8 flex w-full items-center gap-3 rounded-sm border border-border px-3 py-2.5 text-sm hover:border-destructive hover:text-destructive">

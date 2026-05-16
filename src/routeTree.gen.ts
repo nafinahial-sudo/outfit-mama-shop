@@ -17,8 +17,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
 import { Route as OrderSuccessOrderIdRouteImport } from './routes/order-success.$orderId'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
+import { Route as AdminSocialRouteImport } from './routes/admin.social'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminOfflineSalesRouteImport } from './routes/admin.offline-sales'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin.products.index'
 import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
@@ -63,6 +66,16 @@ const OrderSuccessOrderIdRoute = OrderSuccessOrderIdRouteImport.update({
   path: '/order-success/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSocialRoute = AdminSocialRouteImport.update({
+  id: '/admin/social',
+  path: '/admin/social',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin/reports',
   path: '/admin/reports',
@@ -71,6 +84,11 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/admin/orders',
   path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOfflineSalesRoute = AdminOfflineSalesRouteImport.update({
+  id: '/admin/offline-sales',
+  path: '/admin/offline-sales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -96,8 +114,11 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/offline-sales': typeof AdminOfflineSalesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/social': typeof AdminSocialRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/order-success/$orderId': typeof OrderSuccessOrderIdRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -111,8 +132,11 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/offline-sales': typeof AdminOfflineSalesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/social': typeof AdminSocialRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/order-success/$orderId': typeof OrderSuccessOrderIdRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/admin': typeof AdminIndexRoute
@@ -127,8 +151,11 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/offline-sales': typeof AdminOfflineSalesRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/social': typeof AdminSocialRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/order-success/$orderId': typeof OrderSuccessOrderIdRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -144,8 +171,11 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/admin/login'
+    | '/admin/offline-sales'
     | '/admin/orders'
     | '/admin/reports'
+    | '/admin/social'
+    | '/category/$slug'
     | '/order-success/$orderId'
     | '/products/$productId'
     | '/admin/'
@@ -159,8 +189,11 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/admin/login'
+    | '/admin/offline-sales'
     | '/admin/orders'
     | '/admin/reports'
+    | '/admin/social'
+    | '/category/$slug'
     | '/order-success/$orderId'
     | '/products/$productId'
     | '/admin'
@@ -174,8 +207,11 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/admin/login'
+    | '/admin/offline-sales'
     | '/admin/orders'
     | '/admin/reports'
+    | '/admin/social'
+    | '/category/$slug'
     | '/order-success/$orderId'
     | '/products/$productId'
     | '/admin/'
@@ -190,8 +226,11 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminOfflineSalesRoute: typeof AdminOfflineSalesRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminSocialRoute: typeof AdminSocialRoute
+  CategorySlugRoute: typeof CategorySlugRoute
   OrderSuccessOrderIdRoute: typeof OrderSuccessOrderIdRoute
   ProductsProductIdRoute: typeof ProductsProductIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -257,6 +296,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderSuccessOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/social': {
+      id: '/admin/social'
+      path: '/admin/social'
+      fullPath: '/admin/social'
+      preLoaderRoute: typeof AdminSocialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/reports': {
       id: '/admin/reports'
       path: '/admin/reports'
@@ -269,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/orders'
       fullPath: '/admin/orders'
       preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/offline-sales': {
+      id: '/admin/offline-sales'
+      path: '/admin/offline-sales'
+      fullPath: '/admin/offline-sales'
+      preLoaderRoute: typeof AdminOfflineSalesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -302,8 +362,11 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminOfflineSalesRoute: AdminOfflineSalesRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminSocialRoute: AdminSocialRoute,
+  CategorySlugRoute: CategorySlugRoute,
   OrderSuccessOrderIdRoute: OrderSuccessOrderIdRoute,
   ProductsProductIdRoute: ProductsProductIdRoute,
   AdminIndexRoute: AdminIndexRoute,

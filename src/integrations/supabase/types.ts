@@ -14,6 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      offline_sales: {
+        Row: {
+          category: string | null
+          color: string | null
+          created_at: string
+          customer_name: string | null
+          id: string
+          notes: string | null
+          phone: string | null
+          product_id: string | null
+          product_name: string
+          quantity: number
+          size: string | null
+          sold_at: string
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          size?: string | null
+          sold_at?: string
+          total: number
+          unit_price: number
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          size?: string | null
+          sold_at?: string
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offline_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           color: string | null
@@ -161,6 +220,24 @@ export type Database = {
           sizes?: string[]
           stock?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string | null
         }
         Relationships: []
       }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
+import { CATEGORY_OPTIONS } from "@/lib/constants";
 
 export const Route = createFileRoute("/admin/products/new")({ component: () => <AdminShell><NewProduct /></AdminShell> });
 
@@ -73,7 +74,14 @@ function NewProduct() {
       <form onSubmit={submit} className="mt-8 space-y-5">
         <Input label="Product Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
         <Input label="Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} textarea />
-        <Input label="Category" value={form.category} onChange={(v) => setForm({ ...form, category: v })} placeholder="e.g. Shirts, Suits" />
+        <div>
+          <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">Category</label>
+          <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
+            className="w-full rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:border-gold focus:outline-none">
+            <option value="">— Select Category —</option>
+            {CATEGORY_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <Input label="Price (৳)" value={form.price} onChange={(v) => setForm({ ...form, price: v })} type="number" />
           <Input label="Discount Price (৳)" value={form.discount_price} onChange={(v) => setForm({ ...form, discount_price: v })} type="number" />
