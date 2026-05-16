@@ -17,6 +17,9 @@ export function Footer() {
             <p className="mt-4 max-w-sm text-sm text-muted-foreground">
               Modern essentials and statement pieces for the contemporary gentleman.
             </p>
+            <div className="mt-5">
+              <SocialBar variant="compact" />
+            </div>
           </div>
           <div>
             <h4 className="text-xs uppercase tracking-[0.25em] text-gold">Shop</h4>
