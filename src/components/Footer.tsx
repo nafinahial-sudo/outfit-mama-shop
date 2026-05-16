@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import logo from "@/assets/logo.jpeg";
+import { SocialBar } from "@/components/SocialBar";
 
 export function Footer() {
   return (
