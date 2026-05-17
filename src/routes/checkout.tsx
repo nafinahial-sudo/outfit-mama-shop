@@ -37,7 +37,7 @@ function Checkout() {
   const total = subtotal + (items.length ? SHIPPING : 0);
   const placeOrderFn = useServerFn(placeOrder);
 
-  const placeOrder = async (e: React.FormEvent) => {
+  const submitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!items.length) return toast.error("Your cart is empty");
     const parsed = schema.safeParse(form);
@@ -85,7 +85,7 @@ function Checkout() {
         <h1 className="font-display text-3xl">Checkout</h1>
         <p className="mt-1 text-sm text-muted-foreground">Fill in your delivery details to place the order.</p>
 
-        <form onSubmit={placeOrder} className="mt-8 grid gap-8 md:grid-cols-[1fr_360px]">
+        <form onSubmit={submitOrder} className="mt-8 grid gap-8 md:grid-cols-[1fr_360px]">
           <div className="space-y-4">
             <Field label="Full Name" value={form.customer_name} onChange={(v) => setForm({ ...form, customer_name: v })} placeholder="e.g. Sadman Nahial" />
             <Field label="Phone Number" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="01XXXXXXXXX" />
