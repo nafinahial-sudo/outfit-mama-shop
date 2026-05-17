@@ -1,6 +1,6 @@
 {
-  "buildCommand": "bun run build",
-  "installCommand": "bun install",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
   "nodeVersion": "20.x",
   "functions": {
     "api/**/*.[jt]s": {
@@ -9,12 +9,6 @@
       "runtime": "nodejs20.x"
     }
   },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/server"
-    }
-  ],
   "headers": [
     {
       "source": "/assets/(.*)",
