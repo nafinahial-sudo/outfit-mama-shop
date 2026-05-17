@@ -42,7 +42,15 @@ export function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground md:flex-row">
-          <div>© {new Date().getFullYear()} Outfit Mama. All rights reserved.</div>
+          <div className="flex items-center gap-4">
+            <span>© {new Date().getFullYear()} Outfit Mama. All rights reserved.</span>
+            <Link
+              to="/admin/login"
+              className="rounded-sm border border-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-gold hover:bg-gold hover:text-background transition-colors"
+            >
+              Admin
+            </Link>
+          </div>
           <div>
             Developed by{" "}
             <a
