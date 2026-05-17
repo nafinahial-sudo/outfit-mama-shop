@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SocialBar } from "@/components/SocialBar";
+import { Marquee } from "@/components/Marquee";
 import { CATEGORIES } from "@/lib/constants";
 import type { Product } from "@/lib/types";
 import logo from "@/assets/logo.jpeg";
@@ -67,6 +68,9 @@ function Index() {
           </div>
         </div>
       </section>
+
+      {/* Marquee */}
+      <Marquee />
 
       {/* Categories */}
       <section id="categories" className="mx-auto w-full max-w-6xl px-4 pt-14">
