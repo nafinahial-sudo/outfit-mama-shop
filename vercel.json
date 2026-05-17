@@ -7,6 +7,13 @@
       "maxDuration": 60
     }
   },
+  "outputDirectory": "dist/client",
+  "rewrites": [
+    {
+      "source": "/*",
+      "destination": "/api/$1"
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
