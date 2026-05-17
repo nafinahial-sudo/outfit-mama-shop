@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import path from "path";
 import { fileURLToPath } from "url";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,9 +68,41 @@ export default async function handler(
     console.log(`[${new Date().toISOString()}] Request: ${req.method} ${pathname}`);
 
     if (isStaticAsset(pathname)) {
-      console.log("Skipping static asset:", pathname);
-      res.status(404).send("Not found");
-      return;
+      // Serve static assets directly from dist/client
+      try {
+        const assetPath = path.resolve(process.cwd(), "dist/client", pathname.replace(/^\//, ""));
+        console.log("Serving asset from:", assetPath);
+        if (!existsSync(assetPath)) {
+          console.log("Asset not found on disk:", assetPath);
+          res.status(404).send("Not found");
+          return;
+        }
+        const ext = path.extname(assetPath).slice(1).toLowerCase();
+        const contentTypes: Record<string, string> = {
+          css: "text/css",
+          js: "application/javascript",
+          png: "image/png",
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          gif: "image/gif",
+          svg: "image/svg+xml",
+          ico: "image/x-icon",
+          woff: "font/woff",
+          woff2: "font/woff2",
+          ttf: "font/ttf",
+          eot: "application/vnd.ms-fontobject",
+        };
+        const contentType = contentTypes[ext] || "application/octet-stream";
+        const data = readFileSync(assetPath);
+        res.setHeader("content-type", contentType);
+        res.setHeader("cache-control", "public, max-age=31536000, immutable");
+        res.status(200).send(Buffer.from(data));
+        return;
+      } catch (e) {
+        console.log("Error serving asset:", e instanceof Error ? e.message : String(e));
+        res.status(500).send("Asset error");
+        return;
+      }
     }
 
     const server = await getServer();
