@@ -57,6 +57,9 @@ function AdminLogin() {
             <button disabled={loading} className="w-full rounded-sm bg-gold py-3 text-sm font-semibold text-background disabled:opacity-60">
               {loading ? "Signing in…" : "Sign In"}
             </button>
+            <p className="text-center text-[10px] text-muted-foreground">
+              Default credentials pre-filled. Press Sign In to continue.
+            </p>
           </form>
         </div>
       </div>
