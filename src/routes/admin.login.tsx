@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { ensureAdminUser } from "@/lib/admin.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ADMIN_EMAIL } from "@/lib/types";
 import logo from "@/assets/logo.jpeg";
 
 export const Route = createFileRoute("/admin/login")({ component: AdminLogin });
@@ -12,8 +11,8 @@ export const Route = createFileRoute("/admin/login")({ component: AdminLogin });
 function AdminLogin() {
   const navigate = useNavigate();
   const ensure = useServerFn(ensureAdminUser);
-  const [email, setEmail] = useState(ADMIN_EMAIL);
-  const [password, setPassword] = useState("OMSAFIN@2026");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
