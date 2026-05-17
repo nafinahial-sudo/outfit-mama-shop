@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { placeOrder } from "@/lib/order.functions";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -34,6 +35,7 @@ function Checkout() {
   });
 
   const total = subtotal + (items.length ? SHIPPING : 0);
+  const placeOrderFn = useServerFn(placeOrder);
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,34 +45,18 @@ function Checkout() {
 
     setSubmitting(true);
     try {
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          ...parsed.data,
-          subtotal,
-          shipping: SHIPPING,
-          total,
-        })
-        .select("id")
-        .single();
-      if (orderErr) throw orderErr;
+      const result = await placeOrderFn({
+        ...parsed.data,
+        subtotal,
+        shipping: SHIPPING,
+        total,
+        items,
+      });
 
-      const { error: itemsErr } = await supabase.from("order_items").insert(
-        items.map((it) => ({
-          order_id: order.id,
-          product_id: it.productId,
-          product_name: it.name,
-          product_image: it.image,
-          size: it.size,
-          color: it.color,
-          quantity: it.quantity,
-          unit_price: it.price,
-        })),
-      );
-      if (itemsErr) throw itemsErr;
+      if (!result?.orderId) throw new Error("Failed to place order");
 
       clear();
-      navigate({ to: "/order-success/$orderId", params: { orderId: order.id } });
+      navigate({ to: "/order-success/$orderId", params: { orderId: result.orderId } });
     } catch (err) {
       console.error(err);
       toast.error(err instanceof Error ? err.message : "Failed to place order");

@@ -1,0 +1,79 @@
+import { createServerFn } from "@tanstack/react-start";
+import type { CartItem, PaymentMethod } from "@/lib/types";
+
+export type PlaceOrderInput = {
+  customer_name: string;
+  phone: string;
+  address: string;
+  district: string;
+  payment_method: PaymentMethod;
+  notes?: string;
+  subtotal: number;
+  shipping: number;
+  total: number;
+  items: CartItem[];
+};
+
+async function getSupabaseAdminClient() {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    return supabaseAdmin;
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY")) {
+      return null;
+    }
+    throw err;
+  }
+}
+
+async function placeOrderWithClient(supabase: any, input: PlaceOrderInput) {
+  const { data: order, error: orderErr } = await supabase
+    .from("orders")
+    .insert({
+      customer_name: input.customer_name,
+      phone: input.phone,
+      address: input.address,
+      district: input.district,
+      payment_method: input.payment_method,
+      subtotal: input.subtotal,
+      shipping: input.shipping,
+      total: input.total,
+      notes: input.notes,
+    })
+    .select("id")
+    .single();
+
+  if (orderErr) throw new Error(orderErr.message);
+  if (!order?.id) throw new Error("Failed to create order");
+
+  const { error: itemsErr } = await supabase.from("order_items").insert(
+    input.items.map((item) => ({
+      order_id: order.id,
+      product_id: item.productId,
+      product_name: item.name,
+      product_image: item.image,
+      size: item.size,
+      color: item.color,
+      quantity: item.quantity,
+      unit_price: item.price,
+    })),
+  );
+
+  if (itemsErr) throw new Error(itemsErr.message);
+
+  return { orderId: order.id };
+}
+
+export const placeOrder = createServerFn({ method: "POST" }).handler(async ({ input }: { input: PlaceOrderInput }) => {
+  if (!input.items.length) {
+    throw new Error("Cart is empty");
+  }
+
+  const supabaseAdmin = await getSupabaseAdminClient();
+  if (supabaseAdmin) {
+    return placeOrderWithClient(supabaseAdmin, input);
+  }
+
+  const { supabase } = await import("@/integrations/supabase/client");
+  return placeOrderWithClient(supabase, input);
+});

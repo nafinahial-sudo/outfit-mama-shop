@@ -1,12 +1,28 @@
 import { createServerFn } from "@tanstack/react-start";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { ADMIN_EMAIL } from "@/lib/types";
 
 const ADMIN_PASSWORD = "OMSAFIN@2026";
 
+async function getSupabaseAdminClient() {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    return supabaseAdmin;
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY")) {
+      return null;
+    }
+    throw err;
+  }
+}
+
 // Idempotently ensure the admin user exists and has the admin role.
 // Called from the admin login page before signing in.
 export const ensureAdminUser = createServerFn({ method: "POST" }).handler(async () => {
+  const supabaseAdmin = await getSupabaseAdminClient();
+  if (!supabaseAdmin) {
+    return { ok: true };
+  }
+
   // Try to find existing user
   const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
     page: 1,
