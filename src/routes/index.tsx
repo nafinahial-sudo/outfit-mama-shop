@@ -69,6 +69,9 @@ function Index() {
         </div>
       </section>
 
+      {/* Marquee */}
+      <Marquee />
+
       {/* Categories */}
       <section id="categories" className="mx-auto w-full max-w-6xl px-4 pt-14">
         <div className="mb-6">
