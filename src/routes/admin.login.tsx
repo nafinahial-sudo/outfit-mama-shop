@@ -13,7 +13,7 @@ function AdminLogin() {
   const navigate = useNavigate();
   const ensure = useServerFn(ensureAdminUser);
   const [email, setEmail] = useState(ADMIN_EMAIL);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("OMSAFIN@2026");
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
