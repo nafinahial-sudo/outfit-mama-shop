@@ -64,16 +64,18 @@ async function placeOrderWithClient(supabase: any, input: PlaceOrderInput) {
   return { orderId: order.id };
 }
 
-export const placeOrder = createServerFn({ method: "POST" }).handler(async ({ input }: { input: PlaceOrderInput }) => {
-  if (!input.items.length) {
-    throw new Error("Cart is empty");
-  }
+export const placeOrder = createServerFn({ method: "POST" })
+  .inputValidator((data: PlaceOrderInput) => data)
+  .handler(async ({ data }: { data: PlaceOrderInput }) => {
+    if (!data.items.length) {
+      throw new Error("Cart is empty");
+    }
 
-  const supabaseAdmin = await getSupabaseAdminClient();
-  if (supabaseAdmin) {
-    return placeOrderWithClient(supabaseAdmin, input);
-  }
+    const supabaseAdmin = await getSupabaseAdminClient();
+    if (supabaseAdmin) {
+      return placeOrderWithClient(supabaseAdmin, data);
+    }
 
-  const { supabase } = await import("@/integrations/supabase/client");
-  return placeOrderWithClient(supabase, input);
-});
+    const { supabase } = await import("@/integrations/supabase/client");
+    return placeOrderWithClient(supabase, data);
+  });

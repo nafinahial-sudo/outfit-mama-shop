@@ -46,11 +46,13 @@ function Checkout() {
     setSubmitting(true);
     try {
       const result = await placeOrderFn({
-        ...parsed.data,
-        subtotal,
-        shipping: SHIPPING,
-        total,
-        items,
+        data: {
+          ...parsed.data,
+          subtotal,
+          shipping: SHIPPING,
+          total,
+          items,
+        },
       });
 
       if (!result?.orderId) throw new Error("Failed to place order");
