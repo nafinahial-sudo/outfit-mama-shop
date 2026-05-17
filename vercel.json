@@ -10,8 +10,13 @@
   },
   "outputDirectory": "dist/client",
   "routes": [
+    { "handle": "filesystem" },
     {
-      "src": "/(.*)",
+      "src": "\/api\/(.*)",
+      "dest": "/api/index.ts"
+    },
+    {
+      "src": "\/(.*)",
       "dest": "/api/index.ts"
     }
   ],
