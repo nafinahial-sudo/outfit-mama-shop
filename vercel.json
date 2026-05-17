@@ -8,10 +8,10 @@
     }
   },
   "outputDirectory": "dist/client",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/*",
-      "destination": "/api/$1"
+      "src": "/(.*)",
+      "dest": "/api/index.ts"
     }
   ],
   "headers": [
