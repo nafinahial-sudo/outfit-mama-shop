@@ -17,9 +17,12 @@ export type PlaceOrderInput = {
 async function getSupabaseAdminClient() {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Access a property to trigger the proxy's initialization and catch the error
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    supabaseAdmin.auth;
     return supabaseAdmin;
   } catch (err) {
-    if (err instanceof Error && err.message.includes("Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY")) {
+    if (err instanceof Error && err.message.includes("SUPABASE_SERVICE_ROLE_KEY")) {
       return null;
     }
     throw err;
@@ -27,9 +30,12 @@ async function getSupabaseAdminClient() {
 }
 
 async function placeOrderWithClient(supabase: any, input: PlaceOrderInput) {
-  const { data: order, error: orderErr } = await supabase
+  const orderId = crypto.randomUUID();
+
+  const { error: orderErr } = await supabase
     .from("orders")
     .insert({
+      id: orderId,
       customer_name: input.customer_name,
       phone: input.phone,
       address: input.address,
@@ -39,16 +45,13 @@ async function placeOrderWithClient(supabase: any, input: PlaceOrderInput) {
       shipping: input.shipping,
       total: input.total,
       notes: input.notes,
-    })
-    .select("id")
-    .single();
+    });
 
   if (orderErr) throw new Error(orderErr.message);
-  if (!order?.id) throw new Error("Failed to create order");
 
   const { error: itemsErr } = await supabase.from("order_items").insert(
     input.items.map((item) => ({
-      order_id: order.id,
+      order_id: orderId,
       product_id: item.productId,
       product_name: item.name,
       product_image: item.image,
@@ -61,7 +64,7 @@ async function placeOrderWithClient(supabase: any, input: PlaceOrderInput) {
 
   if (itemsErr) throw new Error(itemsErr.message);
 
-  return { orderId: order.id };
+  return { orderId };
 }
 
 export const placeOrder = createServerFn({ method: "POST" })

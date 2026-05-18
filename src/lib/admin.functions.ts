@@ -6,9 +6,12 @@ const ADMIN_PASSWORD = "OMSAFIN@2026";
 async function getSupabaseAdminClient() {
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Access a property to trigger the proxy's initialization and catch the error
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    supabaseAdmin.auth;
     return supabaseAdmin;
   } catch (err) {
-    if (err instanceof Error && err.message.includes("Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY")) {
+    if (err instanceof Error && err.message.includes("SUPABASE_SERVICE_ROLE_KEY")) {
       return null;
     }
     throw err;
