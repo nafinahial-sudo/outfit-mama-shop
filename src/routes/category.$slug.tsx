@@ -60,9 +60,9 @@ function CategoryPage() {
                 const effective = hasDiscount ? p.discount_price! : p.price;
                 return (
                   <Link key={p.id} to="/products/$productId" params={{ productId: p.id }} className="group block">
-                    <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
+                    <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted/20 flex items-center justify-center border border-border/30">
                       {p.images[0] ? (
-                        <img src={p.images[0]} alt={p.name} className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${p.stock <= 0 ? "opacity-40" : "opacity-95"}`} />
+                        <img src={p.images[0]} alt={p.name} className={`max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105 ${p.stock <= 0 ? "opacity-40" : "opacity-95"}`} />
                       ) : (
                         <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
                       )}

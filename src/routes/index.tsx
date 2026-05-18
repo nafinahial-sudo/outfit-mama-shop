@@ -157,9 +157,9 @@ function ProductCard({ product }: { product: Product }) {
   const effective = hasDiscount ? product.discount_price! : product.price;
   return (
     <Link to="/products/$productId" params={{ productId: product.id }} className="group block">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted/20 flex items-center justify-center border border-border/30">
         {product.images[0] ? (
-          <img src={product.images[0]} alt={product.name} className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${product.stock <= 0 ? "opacity-40" : "opacity-95"}`} />
+          <img src={product.images[0]} alt={product.name} className={`max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105 ${product.stock <= 0 ? "opacity-40" : "opacity-95"}`} />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
         )}

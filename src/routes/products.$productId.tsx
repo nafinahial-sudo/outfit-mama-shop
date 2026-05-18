@@ -79,9 +79,9 @@ function ProductDetail() {
         <div className="mt-4 grid gap-8 md:grid-cols-2">
           {/* Gallery */}
           <div>
-            <div className="relative aspect-square overflow-hidden rounded-sm bg-muted">
+            <div className="relative aspect-square overflow-hidden rounded-sm bg-muted/20 flex items-center justify-center border border-border/30">
               {product.images[activeImg] ? (
-                <img src={product.images[activeImg]} alt={product.name} className="h-full w-full object-cover" />
+                <img src={product.images[activeImg]} alt={product.name} className="max-h-full max-w-full object-contain" />
               ) : (
                 <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No image</div>
               )}
@@ -92,9 +92,9 @@ function ProductDetail() {
                   <button
                     key={i}
                     onClick={() => setActiveImg(i)}
-                    className={`aspect-square overflow-hidden rounded-sm border ${i === activeImg ? "border-gold" : "border-border"}`}
+                    className={`aspect-square overflow-hidden rounded-sm border bg-muted/10 flex items-center justify-center ${i === activeImg ? "border-gold" : "border-border/60"}`}
                   >
-                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <img src={src} alt="" className="max-h-full max-w-full object-contain" />
                   </button>
                 ))}
               </div>
@@ -139,20 +139,6 @@ function ProductDetail() {
                       {s}
                     </button>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {product.size_chart && (
-              <div className="mt-5">
-                <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Size Chart</div>
-                <div className="w-full overflow-x-auto rounded-sm border border-border bg-muted/10 p-2">
-                  <img
-                    src={product.size_chart}
-                    alt="Size Chart"
-                    className="max-w-full h-auto object-contain rounded-sm"
-                    style={{ display: "block" }}
-                  />
                 </div>
               </div>
             )}
