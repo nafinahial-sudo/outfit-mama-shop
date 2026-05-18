@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Edit } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products/")({ component: () => <AdminShell><List /></AdminShell> });
 
@@ -91,9 +91,14 @@ function List() {
                     </div>
                   </td>
                   <td className="p-3 text-right">
-                    <button onClick={() => remove(p.id)} className="text-muted-foreground hover:text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex justify-end items-center gap-3">
+                      <Link to="/admin/products/edit/$productId" params={{ productId: p.id }} className="text-muted-foreground hover:text-gold transition-colors">
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                      <button onClick={() => remove(p.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
