@@ -13,8 +13,10 @@ function NewProduct() {
   const [form, setForm] = useState({
     name: "", description: "", category: "",
     price: "", discount_price: "", stock: "0",
-    sizes: "", colors: "",
   });
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [colorsList, setColorsList] = useState<string[]>([]);
+  const [colorInput, setColorInput] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -53,8 +55,8 @@ function NewProduct() {
         price: +form.price,
         discount_price: form.discount_price ? +form.discount_price : null,
         stock: +form.stock || 0,
-        sizes: form.sizes.split(",").map((s) => s.trim()).filter(Boolean),
-        colors: form.colors.split(",").map((s) => s.trim()).filter(Boolean),
+        sizes: selectedSizes,
+        colors: colorsList,
         images: urls,
       });
       if (insErr) throw insErr;
@@ -87,8 +89,84 @@ function NewProduct() {
           <Input label="Discount Price (৳)" value={form.discount_price} onChange={(v) => setForm({ ...form, discount_price: v })} type="number" />
           <Input label="Stock" value={form.stock} onChange={(v) => setForm({ ...form, stock: v })} type="number" />
         </div>
-        <Input label="Sizes (comma separated)" value={form.sizes} onChange={(v) => setForm({ ...form, sizes: v })} placeholder="S, M, L, XL" />
-        <Input label="Colors (comma separated)" value={form.colors} onChange={(v) => setForm({ ...form, colors: v })} placeholder="Black, White, Navy" />
+        
+        <div>
+          <label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">Sizes</label>
+          <div className="flex flex-wrap gap-2">
+            {["S", "M", "L", "XL", "XXL", "XXXL"].map((sz) => {
+              const active = selectedSizes.includes(sz);
+              return (
+                <button
+                  type="button"
+                  key={sz}
+                  onClick={() => {
+                    setSelectedSizes((prev) =>
+                      prev.includes(sz) ? prev.filter((s) => s !== sz) : [...prev, sz]
+                    );
+                  }}
+                  className={`min-w-12 rounded-sm border px-3 py-2 text-sm transition-colors ${
+                    active ? "border-gold bg-gold text-background" : "border-border hover:border-gold text-muted-foreground"
+                  }`}
+                >
+                  {sz}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">Colors</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={colorInput}
+              onChange={(e) => setColorInput(e.target.value)}
+              placeholder="Type a color (e.g. Black)"
+              className="flex-1 rounded-sm border border-border bg-background px-3 py-2.5 text-sm focus:border-gold focus:outline-none"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (colorInput.trim()) {
+                    setColorsList((prev) => [...prev, colorInput.trim()]);
+                    setColorInput("");
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (colorInput.trim()) {
+                  setColorsList((prev) => [...prev, colorInput.trim()]);
+                  setColorInput("");
+                }
+              }}
+              className="rounded-sm border border-gold px-4 text-xs font-semibold text-gold hover:bg-gold hover:text-background transition-colors"
+            >
+              Add
+            </button>
+          </div>
+          {colorsList.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {colorsList.map((col, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1 rounded-sm bg-muted px-2.5 py-1 text-xs text-muted-foreground border border-border"
+                >
+                  {col}
+                  <button
+                    type="button"
+                    onClick={() => setColorsList((prev) => prev.filter((_, i) => i !== idx))}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div>
           <label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">Images (multiple)</label>
