@@ -27,6 +27,7 @@ function EditProduct() {
     discount_price: "",
     stock: "0",
   });
+  const [isFeatured, setIsFeatured] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [colorsList, setColorsList] = useState<string[]>([]);
   const [colorInput, setColorInput] = useState("");
@@ -56,6 +57,7 @@ function EditProduct() {
       });
       setSelectedSizes(product.sizes || []);
       setColorsList(product.colors || []);
+      setIsFeatured(!!product.is_featured);
       setExistingImages(product.images || []);
     }
   }, [product]);
@@ -101,6 +103,7 @@ function EditProduct() {
         sizes: selectedSizes,
         colors: colorsList,
         images: urls,
+        is_featured: isFeatured,
       }).eq("id", productId);
       
       if (updErr) throw updErr;
@@ -150,6 +153,19 @@ function EditProduct() {
           <Input label="Price (৳)" value={form.price} onChange={(v) => setForm({ ...form, price: v })} type="number" />
           <Input label="Discount Price (৳)" value={form.discount_price} onChange={(v) => setForm({ ...form, discount_price: v })} type="number" />
           <Input label="Stock" value={form.stock} onChange={(v) => setForm({ ...form, stock: v })} type="number" />
+        </div>
+
+        <div className="flex items-center gap-2 rounded-sm border border-border p-3.5 bg-muted/10">
+          <input
+            type="checkbox"
+            id="isFeatured"
+            checked={isFeatured}
+            onChange={(e) => setIsFeatured(e.target.checked)}
+            className="h-4 w-4 rounded border-border bg-background text-gold focus:ring-gold"
+          />
+          <label htmlFor="isFeatured" className="text-sm font-medium text-muted-foreground select-none cursor-pointer">
+            Featured Product (Show in Featured Collection on Homepage)
+          </label>
         </div>
         
         <div>

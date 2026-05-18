@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminShell } from "@/components/AdminShell";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 import type { Order, OrderItem, OrderStatus } from "@/lib/types";
 
 export const Route = createFileRoute("/admin/orders")({ component: () => <AdminShell><Orders /></AdminShell> });
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/admin/orders")({ component: () => <AdminS
 const STATUSES: OrderStatus[] = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
 function Orders() {
+  const qc = useQueryClient();
   const [filter, setFilter] = useState<OrderStatus | "all">("all");
   const { data, refetch } = useQuery({
     queryKey: ["admin", "orders", filter],
@@ -28,6 +30,18 @@ function Orders() {
     if (error) return toast.error(error.message);
     toast.success(`Marked ${status}`);
     refetch();
+    qc.invalidateQueries({ queryKey: ["admin"] });
+    qc.invalidateQueries({ queryKey: ["admin", "report"] });
+  };
+
+  const deleteOrder = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this order? This cannot be undone.")) return;
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Order deleted successfully");
+    refetch();
+    qc.invalidateQueries({ queryKey: ["admin"] });
+    qc.invalidateQueries({ queryKey: ["admin", "report"] });
   };
 
   return (
@@ -48,14 +62,14 @@ function Orders() {
         {!data?.length ? (
           <div className="rounded-sm border border-border p-12 text-center text-sm text-muted-foreground">No orders</div>
         ) : (
-          data.map((o) => <OrderCard key={o.id} order={o} onStatus={setStatus} />)
+          data.map((o) => <OrderCard key={o.id} order={o} onStatus={setStatus} onDelete={deleteOrder} />)
         )}
       </div>
     </div>
   );
 }
 
-function OrderCard({ order, onStatus }: { order: Order; onStatus: (id: string, s: OrderStatus) => void }) {
+function OrderCard({ order, onStatus, onDelete }: { order: Order; onStatus: (id: string, s: OrderStatus) => void; onDelete: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const { data: items } = useQuery({
     queryKey: ["order-items", order.id],
@@ -104,7 +118,7 @@ function OrderCard({ order, onStatus }: { order: Order; onStatus: (id: string, s
               ))}
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
             {STATUSES.map((s) => (
               <button key={s} onClick={() => onStatus(order.id, s)}
                 disabled={order.status === s}
@@ -112,6 +126,12 @@ function OrderCard({ order, onStatus }: { order: Order; onStatus: (id: string, s
                 {s === "confirmed" ? "Confirm" : s === "shipped" ? "Ship" : s === "delivered" ? "Deliver" : s === "cancelled" ? "Cancel" : "Pending"}
               </button>
             ))}
+            <button
+              onClick={() => onDelete(order.id)}
+              className="ml-auto flex items-center gap-1.5 rounded-sm border border-destructive bg-destructive/10 px-3 py-1.5 text-xs uppercase tracking-wider text-destructive hover:bg-destructive hover:text-white transition-colors"
+            >
+              <Trash2 className="h-3.5 w-3.5" /> Delete Order
+            </button>
           </div>
         </div>
       )}

@@ -6,22 +6,7 @@ export function Footer() {
   return (
     <footer className="mt-auto border-t border-border/60 bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-10 md:grid-cols-3">
-          <div>
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="Outfit Mama" className="h-10 w-10 rounded-sm object-cover" />
-              <div>
-                <div className="font-display text-lg">Outfit <span className="text-gold">Mama</span></div>
-                <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Men's Fashion</div>
-              </div>
-            </div>
-            <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-              Modern essentials and statement pieces for the contemporary gentleman.
-            </p>
-            <div className="mt-5">
-              <SocialBar variant="compact" />
-            </div>
-          </div>
+        <div className="grid gap-10 md:grid-cols-2">
           <div>
             <h4 className="text-xs uppercase tracking-[0.25em] text-gold">Shop</h4>
             <ul className="mt-4 space-y-2 text-sm">

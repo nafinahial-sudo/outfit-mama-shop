@@ -33,6 +33,9 @@ function Index() {
     },
   });
 
+  const featured = products?.filter((p) => p.is_featured) || [];
+  const displayProducts = featured.length > 0 ? featured : products || [];
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -125,7 +128,7 @@ function Index() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-            {products.map((p) => (
+            {displayProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

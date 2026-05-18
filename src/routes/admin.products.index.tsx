@@ -67,7 +67,14 @@ function List() {
                         {p.images[0] && <img src={p.images[0]} className="h-full w-full object-cover" alt="" />}
                       </div>
                       <div>
-                        <div className="font-medium">{p.name}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{p.name}</span>
+                          {p.is_featured && (
+                            <span className="rounded-sm bg-gold/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-gold border border-gold/20">
+                              Featured
+                            </span>
+                          )}
+                        </div>
                         <div className="text-xs text-muted-foreground">{p.category ?? "—"}</div>
                       </div>
                     </div>
