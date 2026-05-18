@@ -11,6 +11,7 @@ export type Product = {
   stock: number;
   is_active: boolean;
   is_featured?: boolean;
+  size_chart?: string | null;
   created_at: string;
   updated_at: string;
 };

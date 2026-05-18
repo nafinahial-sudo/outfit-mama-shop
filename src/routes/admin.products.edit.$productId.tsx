@@ -34,6 +34,9 @@ function EditProduct() {
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [sizeChartUrl, setSizeChartUrl] = useState<string | null>(null);
+  const [sizeChartFile, setSizeChartFile] = useState<File | null>(null);
+  const [sizeChartPreview, setSizeChartPreview] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
 
   const { data: product, isLoading } = useQuery({
@@ -59,6 +62,7 @@ function EditProduct() {
       setColorsList(product.colors || []);
       setIsFeatured(!!product.is_featured);
       setExistingImages(product.images || []);
+      setSizeChartUrl(product.size_chart || null);
     }
   }, [product]);
 
@@ -93,6 +97,16 @@ function EditProduct() {
         const { data } = supabase.storage.from("product-images").getPublicUrl(path);
         urls.push(data.publicUrl);
       }
+
+      let finalSizeChart = sizeChartUrl;
+      if (sizeChartFile) {
+        const path = `${Date.now()}-sizechart-${Math.random().toString(36).slice(2)}-${sizeChartFile.name}`;
+        const { error } = await supabase.storage.from("product-images").upload(path, sizeChartFile);
+        if (error) throw error;
+        const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+        finalSizeChart = data.publicUrl;
+      }
+
       const payload: any = {
         name: form.name.trim(),
         description: form.description.trim() || null,
@@ -114,6 +128,15 @@ function EditProduct() {
         }
       } catch (e) {
         console.warn("is_featured column check failed:", e);
+      }
+
+      try {
+        const { error: chartErr } = await supabase.from("products").select("size_chart").limit(1);
+        if (!chartErr) {
+          payload.size_chart = finalSizeChart;
+        }
+      } catch (e) {
+        console.warn("size_chart column check failed:", e);
       }
 
       const { error: updErr } = await supabase.from("products").update(payload).eq("id", productId);
@@ -258,6 +281,33 @@ function EditProduct() {
                   </button>
                 </span>
               ))}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">Size Chart Image (Optional)</label>
+          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-sm border border-dashed border-border p-6 text-sm text-muted-foreground hover:border-gold">
+            <Upload className="h-4 w-4" /> Choose size chart image
+            <input type="file" accept="image/*" onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setSizeChartFile(file);
+                setSizeChartPreview(URL.createObjectURL(file));
+              }
+            }} className="hidden" />
+          </label>
+          {(sizeChartPreview || sizeChartUrl) && (
+            <div className="mt-3 relative w-full max-w-xs overflow-hidden rounded-sm border border-border bg-muted/20">
+              <img src={sizeChartPreview || sizeChartUrl || ""} alt="Size chart preview" className="w-full object-contain" style={{ maxHeight: "200px" }} />
+              <button type="button" onClick={() => {
+                setSizeChartFile(null);
+                setSizeChartPreview("");
+                setSizeChartUrl(null);
+              }}
+                className="absolute right-1 top-1 rounded-sm bg-background/80 p-1 hover:bg-destructive hover:text-destructive-foreground">
+                <X className="h-3 w-3" />
+              </button>
             </div>
           )}
         </div>

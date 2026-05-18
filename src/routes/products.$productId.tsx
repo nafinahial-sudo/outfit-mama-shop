@@ -143,6 +143,20 @@ function ProductDetail() {
               </div>
             )}
 
+            {product.size_chart && (
+              <div className="mt-5">
+                <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground font-medium">Size Chart</div>
+                <div className="w-full overflow-x-auto rounded-sm border border-border bg-muted/10 p-2">
+                  <img
+                    src={product.size_chart}
+                    alt="Size Chart"
+                    className="max-w-full h-auto object-contain rounded-sm"
+                    style={{ display: "block" }}
+                  />
+                </div>
+              </div>
+            )}
+
             {product.colors.length > 0 && (
               <div className="mt-5">
                 <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Color</div>

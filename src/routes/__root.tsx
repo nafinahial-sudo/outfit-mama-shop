@@ -112,9 +112,11 @@ function RootComponent() {
   useEffect(() => {
     let cleanup = () => {};
     import("@/integrations/supabase/client").then(({ supabase }) => {
-      const { data } = supabase.auth.onAuthStateChange(() => {
-        router.invalidate();
-        queryClient.invalidateQueries();
+      const { data } = supabase.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+          router.invalidate();
+          queryClient.invalidateQueries();
+        }
       });
       cleanup = () => data.subscription.unsubscribe();
     });
