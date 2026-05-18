@@ -93,7 +93,7 @@ function EditProduct() {
         const { data } = supabase.storage.from("product-images").getPublicUrl(path);
         urls.push(data.publicUrl);
       }
-      const { error: updErr } = await supabase.from("products").update({
+      const payload: any = {
         name: form.name.trim(),
         description: form.description.trim() || null,
         category: form.category.trim() || null,
@@ -103,11 +103,27 @@ function EditProduct() {
         sizes: selectedSizes,
         colors: colorsList,
         images: urls,
-        is_featured: isFeatured,
-      }).eq("id", productId);
+      };
+
+      let hasFeatured = false;
+      try {
+        const { error: colErr } = await supabase.from("products").select("is_featured").limit(1);
+        if (!colErr) {
+          payload.is_featured = isFeatured;
+          hasFeatured = true;
+        }
+      } catch (e) {
+        console.warn("is_featured column check failed:", e);
+      }
+
+      const { error: updErr } = await supabase.from("products").update(payload).eq("id", productId);
       
       if (updErr) throw updErr;
-      toast.success("Product updated successfully");
+      toast.success(
+        hasFeatured 
+          ? "Product updated successfully" 
+          : "Product updated! (Note: 'is_featured' column is missing in DB; run migrations in Supabase to enable featured status)"
+      );
       navigate({ to: "/admin/products" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to update product");

@@ -49,7 +49,7 @@ function NewProduct() {
         const { data } = supabase.storage.from("product-images").getPublicUrl(path);
         urls.push(data.publicUrl);
       }
-      const { error: insErr } = await supabase.from("products").insert({
+      const payload: any = {
         name: form.name.trim(),
         description: form.description.trim() || null,
         category: form.category.trim() || null,
@@ -59,10 +59,27 @@ function NewProduct() {
         sizes: selectedSizes,
         colors: colorsList,
         images: urls,
-        is_featured: isFeatured,
-      });
+      };
+
+      let hasFeatured = false;
+      try {
+        const { error: colErr } = await supabase.from("products").select("is_featured").limit(1);
+        if (!colErr) {
+          payload.is_featured = isFeatured;
+          hasFeatured = true;
+        }
+      } catch (e) {
+        console.warn("is_featured column check failed:", e);
+      }
+
+      const { error: insErr } = await supabase.from("products").insert(payload);
       if (insErr) throw insErr;
-      toast.success("Product added");
+      
+      toast.success(
+        hasFeatured 
+          ? "Product added" 
+          : "Product added! (Note: 'is_featured' column is missing in DB; run migrations in Supabase to enable featured status)"
+      );
       navigate({ to: "/admin/products" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed");
