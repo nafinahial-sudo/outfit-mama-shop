@@ -42,7 +42,7 @@ function Index() {
         <div className="absolute inset-0 -z-10 opacity-[0.04]" style={{
           backgroundImage: `radial-gradient(circle at 30% 20%, var(--gold), transparent 40%), radial-gradient(circle at 70% 80%, var(--gold), transparent 40%)`,
         }} />
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:py-24">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-gold">
               <span className="h-px w-8 bg-gold" /> New Season Drop
@@ -62,10 +62,7 @@ function Index() {
               </Link>
             </div>
           </div>
-          <div className="relative aspect-square overflow-hidden rounded-sm bg-black border border-border/40">
-            <img src={logo} alt="Outfit Mama" className="h-full w-full object-cover opacity-95" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent" />
-          </div>
+
         </div>
       </section>
 
@@ -159,11 +156,15 @@ function ProductCard({ product }: { product: Product }) {
     <Link to="/products/$productId" params={{ productId: product.id }} className="group block">
       <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
         {product.images[0] ? (
-          <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <img src={product.images[0]} alt={product.name} className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${product.stock <= 0 ? "opacity-40" : "opacity-95"}`} />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
         )}
-        {hasDiscount && (
+        {product.stock <= 0 ? (
+          <div className="absolute left-2 top-2 rounded-sm bg-destructive px-2 py-0.5 text-[10px] font-semibold text-white">
+            STOCK OUT
+          </div>
+        ) : hasDiscount && (
           <div className="absolute left-2 top-2 rounded-sm bg-gold px-2 py-0.5 text-[10px] font-semibold text-background">
             SALE
           </div>

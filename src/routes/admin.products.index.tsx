@@ -18,6 +18,14 @@ function List() {
     },
   });
 
+  const toggleStock = async (id: string, currentStock: number) => {
+    const newStock = currentStock > 0 ? 0 : 10;
+    const { error } = await supabase.from("products").update({ stock: newStock }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(newStock === 0 ? "Product marked as out of stock" : "Product restocked (stock set to 10)");
+    refetch();
+  };
+
   const remove = async (id: string) => {
     if (!confirm("Delete this product?")) return;
     const { error } = await supabase.from("products").delete().eq("id", id);
@@ -65,7 +73,23 @@ function List() {
                     </div>
                   </td>
                   <td className="p-3 text-gold">৳{Number(p.discount_price ?? p.price).toLocaleString()}</td>
-                  <td className="p-3">{p.stock}</td>
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <span className={p.stock === 0 ? "text-destructive font-medium" : ""}>
+                        {p.stock === 0 ? "Out of Stock" : p.stock}
+                      </span>
+                      <button
+                        onClick={() => toggleStock(p.id, p.stock)}
+                        className={`rounded-sm border px-2 py-0.5 text-[10px] uppercase tracking-wider transition-colors ${
+                          p.stock > 0
+                            ? "border-destructive/30 text-destructive hover:bg-destructive hover:text-white"
+                            : "border-gold/30 text-gold hover:bg-gold hover:text-background"
+                        }`}
+                      >
+                        {p.stock > 0 ? "Stock Out" : "Restock"}
+                      </button>
+                    </div>
+                  </td>
                   <td className="p-3 text-right">
                     <button onClick={() => remove(p.id)} className="text-muted-foreground hover:text-destructive">
                       <Trash2 className="h-4 w-4" />

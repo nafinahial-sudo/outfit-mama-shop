@@ -55,6 +55,7 @@ function ProductDetail() {
   const effective = hasDiscount ? product.discount_price! : product.price;
 
   const handleAdd = (buyNow: boolean) => {
+    if (product.stock <= 0) return toast.error("This product is out of stock");
     if (product.sizes.length && !size) return toast.error("Please select a size");
     if (product.colors.length && !color) return toast.error("Please select a color");
     addItem({
@@ -102,7 +103,14 @@ function ProductDetail() {
           {/* Info */}
           <div>
             {product.category && <div className="text-[10px] uppercase tracking-[0.3em] text-gold">{product.category}</div>}
-            <h1 className="mt-2 font-display text-3xl md:text-4xl">{product.name}</h1>
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
+              <h1 className="font-display text-3xl md:text-4xl">{product.name}</h1>
+              {product.stock <= 0 && (
+                <span className="rounded-sm bg-destructive px-2 py-0.5 text-[10px] font-semibold text-white uppercase tracking-wider">
+                  Stock Out
+                </span>
+              )}
+            </div>
             <div className="mt-3 flex items-baseline gap-3">
               <span className="text-2xl text-gold">৳{effective.toLocaleString()}</span>
               {hasDiscount && (
@@ -152,28 +160,41 @@ function ProductDetail() {
               </div>
             )}
 
-            <div className="mt-5">
-              <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Quantity</div>
-              <div className="inline-flex items-center rounded-sm border border-border">
-                <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2"><Minus className="h-3 w-3" /></button>
-                <span className="w-10 text-center text-sm">{qty}</span>
-                <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2"><Plus className="h-3 w-3" /></button>
+            {product.stock > 0 && (
+              <div className="mt-5">
+                <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Quantity</div>
+                <div className="inline-flex items-center rounded-sm border border-border">
+                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2"><Minus className="h-3 w-3" /></button>
+                  <span className="w-10 text-center text-sm">{qty}</span>
+                  <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2"><Plus className="h-3 w-3" /></button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button
-                onClick={() => handleAdd(true)}
-                className="flex-1 rounded-sm bg-gold py-3 text-sm font-semibold text-background hover:opacity-90"
-              >
-                Buy Now
-              </button>
-              <button
-                onClick={() => handleAdd(false)}
-                className="flex-1 rounded-sm border border-gold py-3 text-sm font-semibold text-gold hover:bg-gold hover:text-background transition-colors"
-              >
-                Add to Cart
-              </button>
+              {product.stock > 0 ? (
+                <>
+                  <button
+                    onClick={() => handleAdd(true)}
+                    className="flex-1 rounded-sm bg-gold py-3 text-sm font-semibold text-background hover:opacity-90"
+                  >
+                    Buy Now
+                  </button>
+                  <button
+                    onClick={() => handleAdd(false)}
+                    className="flex-1 rounded-sm border border-gold py-3 text-sm font-semibold text-gold hover:bg-gold hover:text-background transition-colors"
+                  >
+                    Add to Cart
+                  </button>
+                </>
+              ) : (
+                <button
+                  disabled
+                  className="flex-1 rounded-sm bg-muted py-3 text-sm font-semibold text-muted-foreground cursor-not-allowed border border-border uppercase tracking-wider"
+                >
+                  Stock Out
+                </button>
+              )}
             </div>
 
             <div className="mt-6 space-y-1 text-xs text-muted-foreground">

@@ -5,6 +5,7 @@ import { ensureAdminUser } from "@/lib/admin.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import logo from "@/assets/logo.jpeg";
+import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/admin/login")({ component: AdminLogin });
 
@@ -33,7 +34,13 @@ function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="absolute left-4 top-4 md:left-8 md:top-8">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-gold transition-colors">
+          <ChevronLeft className="h-4 w-4" />
+          Back to shop
+        </Link>
+      </div>
       <div className="w-full max-w-sm">
         <Link to="/" className="mb-8 flex items-center justify-center gap-2">
           <img src={logo} alt="" className="h-10 w-10 rounded-sm object-cover" />

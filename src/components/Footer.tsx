@@ -4,7 +4,7 @@ import { SocialBar } from "@/components/SocialBar";
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-border/60 bg-background">
+    <footer className="mt-auto border-t border-border/60 bg-background">
       <div className="mx-auto max-w-6xl px-4 py-12">
         <div className="grid gap-10 md:grid-cols-3">
           <div>

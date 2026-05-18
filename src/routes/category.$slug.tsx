@@ -62,11 +62,13 @@ function CategoryPage() {
                   <Link key={p.id} to="/products/$productId" params={{ productId: p.id }} className="group block">
                     <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
                       {p.images[0] ? (
-                        <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img src={p.images[0]} alt={p.name} className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${p.stock <= 0 ? "opacity-40" : "opacity-95"}`} />
                       ) : (
                         <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
                       )}
-                      {hasDiscount && (
+                      {p.stock <= 0 ? (
+                        <div className="absolute left-2 top-2 rounded-sm bg-destructive px-2 py-0.5 text-[10px] font-semibold text-white">STOCK OUT</div>
+                      ) : hasDiscount && (
                         <div className="absolute left-2 top-2 rounded-sm bg-gold px-2 py-0.5 text-[10px] font-semibold text-background">SALE</div>
                       )}
                     </div>
