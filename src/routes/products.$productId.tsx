@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Minus, Plus, Loader2 } from "lucide-react";
+import { getOptimizedImageUrl } from "@/lib/image.optimizer";
 
 export const Route = createFileRoute("/products/$productId")({
   component: ProductDetail,
@@ -95,7 +96,7 @@ function ProductDetail() {
                     </div>
                   )}
                   <img
-                    src={product.images[activeImg]}
+                    src={getOptimizedImageUrl(product.images[activeImg], 1000)}
                     alt={product.name}
                     onLoad={() => setMainImageLoaded(true)}
                     className={`max-h-full max-w-full object-contain transition-all duration-700 ${
@@ -115,7 +116,7 @@ function ProductDetail() {
                     onClick={() => setActiveImg(i)}
                     className={`aspect-square overflow-hidden rounded-sm border bg-muted/10 flex items-center justify-center ${i === activeImg ? "border-gold" : "border-border/60"}`}
                   >
-                    <img src={src} alt="" className="max-h-full max-w-full object-contain" />
+                    <img src={getOptimizedImageUrl(src, 150)} alt="" className="max-h-full max-w-full object-contain" />
                   </button>
                 ))}
               </div>

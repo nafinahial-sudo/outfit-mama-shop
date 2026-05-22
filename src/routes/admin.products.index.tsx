@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Trash2, Plus, Edit } from "lucide-react";
 import { useState } from "react";
 import { compressImage } from "@/lib/image.utils";
+import { getOptimizedImageUrl } from "@/lib/image.optimizer";
 
 export const Route = createFileRoute("/admin/products/")({ component: () => <AdminShell><List /></AdminShell> });
 
@@ -112,7 +113,7 @@ function List() {
                     <td className="p-3">
                       <div className="flex items-center gap-3">
                         <div className="h-12 w-10 overflow-hidden rounded-sm bg-muted flex items-center justify-center border border-border/30">
-                          {p.images[0] && <img src={p.images[0]} className="max-h-full max-w-full object-contain" alt="" />}
+                          {p.images[0] && <img src={getOptimizedImageUrl(p.images[0], 100)} className="max-h-full max-w-full object-contain" alt="" />}
                         </div>
                         <div>
                           <div className="flex flex-wrap items-center gap-2">

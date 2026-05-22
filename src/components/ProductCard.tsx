@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { Product } from "@/lib/types";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { getOptimizedImageUrl } from "@/lib/image.optimizer";
 
 export function ProductCard({ product }: { product: Product }) {
   const hasDiscount = product.discount_price != null && product.discount_price < product.price;
@@ -20,7 +21,7 @@ export function ProductCard({ product }: { product: Product }) {
               </div>
             )}
             <img
-              src={product.images[0]}
+              src={getOptimizedImageUrl(product.images[0], 600)}
               alt={product.name}
               loading="lazy"
               onLoad={() => setImageLoaded(true)}
