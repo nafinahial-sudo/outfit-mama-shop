@@ -4,10 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import type { Product } from "@/lib/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/products/$productId")({
   component: ProductDetail,
@@ -32,6 +32,11 @@ function ProductDetail() {
   const [size, setSize] = useState<string | null>(null);
   const [color, setColor] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  const [mainImageLoaded, setMainImageLoaded] = useState(false);
+
+  useEffect(() => {
+    setMainImageLoaded(false);
+  }, [activeImg]);
 
   if (isLoading)
     return (
@@ -83,7 +88,21 @@ function ProductDetail() {
           <div>
             <div className="relative aspect-square overflow-hidden rounded-sm bg-muted/20 flex items-center justify-center border border-border/30">
               {product.images[activeImg] ? (
-                <img src={product.images[activeImg]} alt={product.name} className="max-h-full max-w-full object-contain" />
+                <>
+                  {!mainImageLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted/10 animate-pulse">
+                      <Loader2 className="h-8 w-8 animate-spin text-gold/50" />
+                    </div>
+                  )}
+                  <img
+                    src={product.images[activeImg]}
+                    alt={product.name}
+                    onLoad={() => setMainImageLoaded(true)}
+                    className={`max-h-full max-w-full object-contain transition-all duration-700 ${
+                      mainImageLoaded ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                </>
               ) : (
                 <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No image</div>
               )}

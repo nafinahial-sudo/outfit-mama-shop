@@ -7,6 +7,7 @@ import { SocialBar } from "@/components/SocialBar";
 import { Marquee } from "@/components/Marquee";
 import { CATEGORIES } from "@/lib/constants";
 import type { Product } from "@/lib/types";
+import { ProductCard } from "@/components/ProductCard";
 import logo from "@/assets/logo.jpeg";
 
 export const Route = createFileRoute("/")({
@@ -151,39 +152,5 @@ function Index() {
 
       <Footer />
     </div>
-  );
-}
-
-function ProductCard({ product }: { product: Product }) {
-  const hasDiscount = product.discount_price != null && product.discount_price < product.price;
-  const effective = hasDiscount ? product.discount_price! : product.price;
-  return (
-    <Link to="/products/$productId" params={{ productId: product.id }} className="group block">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted/20 flex items-center justify-center border border-border/30">
-        {product.images[0] ? (
-          <img src={product.images[0]} alt={product.name} className={`max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105 ${product.stock <= 0 ? "opacity-40" : "opacity-95"}`} />
-        ) : (
-          <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
-        )}
-        {product.stock <= 0 ? (
-          <div className="absolute left-2 top-2 rounded-sm bg-destructive px-2 py-0.5 text-[10px] font-semibold text-white">
-            STOCK OUT
-          </div>
-        ) : hasDiscount && (
-          <div className="absolute left-2 top-2 rounded-sm bg-gold px-2 py-0.5 text-[10px] font-semibold text-background">
-            SALE
-          </div>
-        )}
-      </div>
-      <div className="mt-3 px-0.5">
-        <h3 className="line-clamp-1 text-sm font-medium">{product.name}</h3>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-sm text-gold">৳{effective.toLocaleString()}</span>
-          {hasDiscount && (
-            <span className="text-xs text-muted-foreground line-through">৳{product.price.toLocaleString()}</span>
-          )}
-        </div>
-      </div>
-    </Link>
   );
 }

@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Product } from "@/lib/types";
 import { toast } from "sonner";
 import { Trash2, Plus, Edit } from "lucide-react";
+import { useState } from "react";
+import { compressImage } from "@/lib/image.utils";
 
 export const Route = createFileRoute("/admin/products/")({ component: () => <AdminShell><List /></AdminShell> });
 
@@ -24,6 +26,50 @@ function List() {
     if (error) return toast.error(error.message);
     toast.success(newStock === 0 ? "Product marked as out of stock" : "Product restocked (stock set to 10)");
     refetch();
+  };
+
+  const [optimizingId, setOptimizingId] = useState<string | null>(null);
+
+  const optimizeProduct = async (product: Product) => {
+    if (optimizingId) return;
+    setOptimizingId(product.id);
+    toast.info(`Downloading and compressing images for "${product.name}"... This might take a few seconds.`);
+    try {
+      const optimizedUrls: string[] = [];
+      for (const url of product.images) {
+        // Fetch raw image blob
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to download image file");
+        const blob = await res.blob();
+        
+        // Convert blob to File and compress
+        const file = new File([blob], "image.jpg", { type: blob.type });
+        const compressedFile = await compressImage(file);
+        
+        // Upload to Supabase storage bucket
+        const path = `optimized-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+        const { error: uploadError } = await supabase.storage.from("product-images").upload(path, compressedFile);
+        if (uploadError) throw uploadError;
+        
+        const { data: pubData } = supabase.storage.from("product-images").getPublicUrl(path);
+        optimizedUrls.push(pubData.publicUrl);
+      }
+      
+      // Update database product record
+      const { error: updateError } = await supabase
+        .from("products")
+        .update({ images: optimizedUrls })
+        .eq("id", product.id);
+      
+      if (updateError) throw updateError;
+      toast.success(`Successfully optimized images for "${product.name}"!`);
+      refetch();
+    } catch (err) {
+      console.error(err);
+      toast.error(`Failed to optimize: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setOptimizingId(null);
+    }
   };
 
   const remove = async (id: string) => {
@@ -59,26 +105,38 @@ function List() {
               </tr>
             </thead>
             <tbody>
-              {data.map((p) => (
-                <tr key={p.id} className="border-t border-border">
-                  <td className="p-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-10 overflow-hidden rounded-sm bg-muted">
-                        {p.images[0] && <img src={p.images[0]} className="h-full w-full object-cover" alt="" />}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{p.name}</span>
-                          {p.is_featured && (
-                            <span className="rounded-sm bg-gold/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-gold border border-gold/20">
-                              Featured
-                            </span>
-                          )}
+              {data.map((p) => {
+                const hasLegacyImages = p.images?.some(url => url.includes("supabase.co") && !url.includes("optimized-"));
+                return (
+                  <tr key={p.id} className="border-t border-border">
+                    <td className="p-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-12 w-10 overflow-hidden rounded-sm bg-muted flex items-center justify-center border border-border/30">
+                          {p.images[0] && <img src={p.images[0]} className="max-h-full max-w-full object-contain" alt="" />}
                         </div>
-                        <div className="text-xs text-muted-foreground">{p.category ?? "—"}</div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-medium">{p.name}</span>
+                            {p.is_featured && (
+                              <span className="rounded-sm bg-gold/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-gold border border-gold/20">
+                                Featured
+                              </span>
+                            )}
+                            {hasLegacyImages && (
+                              <button
+                                onClick={() => optimizeProduct(p)}
+                                disabled={optimizingId !== null}
+                                className="rounded-sm bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-500 border border-amber-500/20 hover:bg-amber-500 hover:text-background transition-all disabled:opacity-50"
+                                title="This product has very large images that slow down the website. Click to optimize."
+                              >
+                                {optimizingId === p.id ? "Optimizing..." : "Optimize Size"}
+                              </button>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground">{p.category ?? "—"}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
                   <td className="p-3 text-gold">৳{Number(p.discount_price ?? p.price).toLocaleString()}</td>
                   <td className="p-3">
                     <div className="flex items-center gap-2">
@@ -108,7 +166,8 @@ function List() {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         )}
