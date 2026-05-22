@@ -20,7 +20,19 @@ function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Ensure admin record exists/has correct password before sign-in
+      // 1. Try direct sign-in first for instant login speed
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (!error) {
+          toast.success("Welcome back");
+          navigate({ to: "/admin" });
+          return;
+        }
+      } catch (inner) {
+        console.warn("Direct login failed, attempting server ensure:", inner);
+      }
+
+      // 2. If direct login fails, idempotently ensure admin record exists/has correct password, then try again
       await ensure({});
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;

@@ -31,6 +31,8 @@ function Index() {
       if (error) throw error;
       return data as Product[];
     },
+    staleTime: 1000 * 60 * 5, // Cache products for 5 minutes
+    gcTime: 1000 * 60 * 10,   // Keep unused query data in cache for 10 minutes
   });
 
   const featured = products?.filter((p) => p.is_featured) || [];

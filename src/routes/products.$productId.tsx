@@ -24,6 +24,8 @@ function ProductDetail() {
       if (error) throw error;
       return data as Product | null;
     },
+    staleTime: 1000 * 60 * 5, // Cache product details for 5 minutes
+    gcTime: 1000 * 60 * 10,   // Keep unused query data in cache for 10 minutes
   });
 
   const [activeImg, setActiveImg] = useState(0);

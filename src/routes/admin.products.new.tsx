@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 import { CATEGORY_OPTIONS } from "@/lib/constants";
+import { compressImage } from "@/lib/image.utils";
 
 export const Route = createFileRoute("/admin/products/new")({ component: () => <AdminShell><NewProduct /></AdminShell> });
 
@@ -43,8 +44,10 @@ function NewProduct() {
     try {
       const urls: string[] = [];
       for (const f of files) {
-        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${f.name}`;
-        const { error } = await supabase.storage.from("product-images").upload(path, f);
+        toast.info(`Optimizing and compressing image: ${f.name}...`);
+        const compressedFile = await compressImage(f);
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${compressedFile.name}`;
+        const { error } = await supabase.storage.from("product-images").upload(path, compressedFile);
         if (error) throw error;
         const { data } = supabase.storage.from("product-images").getPublicUrl(path);
         urls.push(data.publicUrl);
