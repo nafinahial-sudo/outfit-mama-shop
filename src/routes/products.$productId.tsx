@@ -7,7 +7,7 @@ import type { Product } from "@/lib/types";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
-import { Minus, Plus, Loader2 } from "lucide-react";
+import { Minus, Plus, Loader2, ArrowLeft } from "lucide-react";
 import { getOptimizedImageUrl } from "@/lib/image.optimizer";
 
 export const Route = createFileRoute("/products/$productId")({
@@ -83,7 +83,14 @@ function ProductDetail() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-        <Link to="/" className="text-xs text-muted-foreground hover:text-gold">← Back</Link>
+        <div className="flex items-center mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-gold transition-colors duration-200 border border-border hover:border-gold/50 px-4 py-2 rounded-sm bg-muted/10 backdrop-blur-sm"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Shop
+          </Link>
+        </div>
         <div className="mt-4 grid gap-8 md:grid-cols-2">
           {/* Gallery */}
           <div>
